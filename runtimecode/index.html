@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Center and Disaster Recovery Solution for Vietnam Operations</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: #34495e;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav li {
+            margin: 0 1rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            display: block;
+        }
+
+        nav a:hover {
+            background-color: #2c3e50;
+        }
+
+        main {
+            background: white;
+            margin: 2rem 0;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .content {
+            padding: 3rem;
+        }
+
+        h1, h2, h3, h4 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #34495e;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #2980b9;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            color: #27ae60;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .diagram {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .diagram img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .diagram-caption {
+            margin-top: 1rem;
+            font-style: italic;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .pros, .cons {
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .pros {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-left: 5px solid #28a745;
+        }
+
+        .cons {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border-left: 5px solid #dc3545;
+        }
+
+        .pros h4, .cons h4 {
+            margin-top: 0;
+        }
+
+        .recommendation {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 5px solid #ffc107;
+        }
+
+        .recommendation h2 {
+            color: #856404;
+            margin-top: 0;
+        }
+
+        .option-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+        }
+
+        .option-card h2 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        .rto-rpo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .rto, .rpo {
+            background: #e3f2fd;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .rto h4, .rpo h4 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 2rem;
+            }
+
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+
+            .rto-rpo {
+                grid-template-columns: 1fr;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            nav li {
+                margin: 0.25rem 0;
+            }
+        }
+
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: none;
+            font-size: 18px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+
+        .scroll-to-top:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Data Center and Disaster Recovery Solution</h1>
+            <p>Comprehensive Infrastructure Strategy for Vietnam Operations</p>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#option1">Option 1: Active-Passive</a></li>
+                <li><a href="#option2">Option 2: Active-Active</a></li>
+                <li><a href="#recommendation">Recommendation</a></li>
+                <li><a href="#conclusion">Conclusion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="content">
+                <section id="overview">
+                    <h1>Executive Summary</h1>
+                    <p>This comprehensive proposal outlines two distinct and viable design options for enhancing the Data Center (DC) and Disaster Recovery (DR) capabilities for our Vietnam operations. The primary objectives are to enhance business continuity, minimize operational risk, and create a scalable architecture that supports future growth across our five Vietnam sites.</p>
+                    
+                    <p>Our current infrastructure consists of VN-OFFICE-01 (main office) and VN-OFFICE-02 (secondary office) as primary operational hubs, along with three smaller branch sites. The existing connectivity includes dedicated internet links at both main offices and two private Point-to-Point (P2P) circuits connecting to our global corporate network.</p>
+                    
+                    <p>The proposed solutions leverage a new commercial colocation data center (VN-DCH-01) to centralize critical infrastructure while optimizing the roles of existing sites. Both design options incorporate advanced technologies such as Software-Defined Wide Area Network (SD-WAN) for intelligent traffic management and enhanced security.</p>
+                </section>
+
+                <section id="option1" class="option-card">
+                    <h2>Design Option 1: Centralized Production DC with Active-Passive DR</h2>
+                    
+                    <h3>High-Level Strategy</h3>
+                    <p>This design option proposes a centralized production data center (DC) in a new colocation facility (VN-DCH-01) with an active-passive disaster recovery (DR) strategy. In this model, VN-DCH-01 will serve as the primary operational hub, hosting all core servers, applications, and critical network equipment. VN-OFFICE-01 will transition to a role primarily focused on user access and local services, while VN-OFFICE-02 will serve as the passive DR site, maintaining a synchronized replica of critical data and systems from VN-DCH-01.</p>
+                    
+                    <p>The core concept behind this strategy is to consolidate primary IT infrastructure into a purpose-built, secure, and resilient colocation data center, thereby enhancing operational efficiency, security, and scalability. The active-passive DR approach at VN-OFFICE-02 ensures business continuity by providing a warm standby environment that can take over operations in the event of a major disaster affecting VN-DCH-01.</p>
+
+                    <h3>Network Architecture</h3>
+                    <div class="diagram">
+                        <img src="design_option_1_network_diagram.png" alt="Design Option 1 Network Architecture">
+                        <div class="diagram-caption">Figure 1: Centralized Production DC with Active-Passive DR Architecture</div>
+                    </div>
+
+                    <h3>Key Components</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Location</th>
+                                <th>Role</th>
+                                <th>Key Infrastructure</th>
+                                <th>Connectivity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>VN-DCH-01</td>
+                                <td>Primary DC</td>
+                                <td>Core servers, applications, storage, NGFWs, core switches</td>
+                                <td>Internet link, Global P2P link, SD-WAN</td>
+                            </tr>
+                            <tr>
+                                <td>VN-OFFICE-01</td>
+                                <td>User Access Hub</td>
+                                <td>Access switches, local services, SD-WAN edge</td>
+                                <td>Internet link, SD-WAN to VN-DCH-01</td>
+                            </tr>
+                            <tr>
+                                <td>VN-OFFICE-02</td>
+                                <td>Passive DR Site</td>
+                                <td>Replicated servers, storage, NGFWs, core switches</td>
+                                <td>Global P2P link, SD-WAN, data replication</td>
+                            </tr>
+                            <tr>
+                                <td>Branch Sites</td>
+                                <td>Remote Access</td>
+                                <td>Basic network devices, SD-WAN edge</td>
+                                <td>SD-WAN to primary sites</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Traffic Flow and Failover</h3>
+                    <p>During normal operations, all primary production traffic is directed to VN-DCH-01. Users at VN-OFFICE-01 and branch sites access applications through the SD-WAN overlay network, which provides secure and optimized paths. Data replication from VN-DCH-01 to VN-OFFICE-02 is continuous and asynchronous, ensuring minimal performance impact on the primary site.</p>
+                    
+                    <p>In the event of a catastrophic failure at VN-DCH-01, the failover process involves detection, DR plan activation, DNS updates, system activation at VN-OFFICE-02, and network re-routing through SD-WAN and BGP convergence.</p>
+
+                    <div class="rto-rpo">
+                        <div class="rto">
+                            <h4>Recovery Time Objective (RTO)</h4>
+                            <p><strong>2-4 hours</strong> - Time required for detection, activation, system startup, and traffic re-routing</p>
+                        </div>
+                        <div class="rpo">
+                            <h4>Recovery Point Objective (RPO)</h4>
+                            <p><strong>15-30 minutes</strong> - Potential data loss due to asynchronous replication interval</p>
+                        </div>
+                    </div>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>Advantages</h4>
+                            <ul>
+                                <li><strong>Cost-Effectiveness:</strong> Lower operational costs compared to active-active setup</li>
+                                <li><strong>Simplicity:</strong> Less complex to design, implement, and manage</li>
+                                <li><strong>Clear Roles:</strong> Distinct responsibilities for each location</li>
+                                <li><strong>Reduced Data Contention:</strong> Single active site eliminates write conflicts</li>
+                                <li><strong>Established Technology:</strong> Mature and widely adopted strategy</li>
+                                <li><strong>Scalability:</strong> Centralized DC allows for better resource optimization</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>Disadvantages</h4>
+                            <ul>
+                                <li><strong>Higher RTO:</strong> Failover process takes time to complete</li>
+                                <li><strong>Data Loss Potential:</strong> Asynchronous replication may result in data loss</li>
+                                <li><strong>Underutilized Resources:</strong> DR site resources are largely idle</li>
+                                <li><strong>Failback Complexity:</strong> Returning to primary site requires careful planning</li>
+                                <li><strong>Single Point of Failure:</strong> Dependency on successful DR activation</li>
+                                <li><strong>Testing Challenges:</strong> DR testing can be disruptive</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="option2" class="option-card">
+                    <h2>Design Option 2: Geo-Clustered Active-Active DC</h2>
+                    
+                    <h3>High-Level Strategy</h3>
+                    <p>This design option proposes a Geo-Clustered Active-Active Data Center solution, leveraging both the new colocation facility (VN-DCH-01) and VN-OFFICE-02 as active production sites. In this model, both data centers simultaneously host and serve applications and data, distributing the workload and providing immediate failover capabilities.</p>
+                    
+                    <p>The core concept is to achieve maximum business continuity and disaster avoidance by eliminating single points of failure and ensuring both data centers are fully operational at all times. This approach requires advanced technologies such as Global Server Load Balancing (GSLB) for intelligent traffic distribution and Data Center Interconnect (DCI) for high-speed, low-latency communication between active sites.</p>
+
+                    <h3>Network Architecture</h3>
+                    <div class="diagram">
+                        <img src="design_option_2_network_diagram.png" alt="Design Option 2 Network Architecture">
+                        <div class="diagram-caption">Figure 2: Geo-Clustered Active-Active Data Center Architecture</div>
+                    </div>
+
+                    <h3>Key Components</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Location</th>
+                                <th>Role</th>
+                                <th>Key Infrastructure</th>
+                                <th>Connectivity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>VN-DCH-01</td>
+                                <td>Active DC</td>
+                                <td>Active servers, applications, storage, NGFWs, GSLB</td>
+                                <td>Internet link, Global P2P link, DCI, SD-WAN</td>
+                            </tr>
+                            <tr>
+                                <td>VN-OFFICE-01</td>
+                                <td>User Access Hub</td>
+                                <td>Access switches, local services, SD-WAN edge</td>
+                                <td>Internet link, SD-WAN to active DCs</td>
+                            </tr>
+                            <tr>
+                                <td>VN-OFFICE-02</td>
+                                <td>Active DC</td>
+                                <td>Active servers, applications, storage, NGFWs, GSLB</td>
+                                <td>Global P2P link, DCI, SD-WAN</td>
+                            </tr>
+                            <tr>
+                                <td>Branch Sites</td>
+                                <td>Remote Access</td>
+                                <td>Basic network devices, SD-WAN edge</td>
+                                <td>SD-WAN to nearest active DC</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Traffic Flow and Failover</h3>
+                    <p>In the active-active architecture, both VN-DCH-01 and VN-OFFICE-02 simultaneously serve production traffic. User traffic is intelligently routed to the nearest or most optimal active data center by GSLB. Bidirectional data replication between sites is continuous and synchronous or near-synchronous over the high-speed DCI.</p>
+                    
+                    <p>Failover is largely automated and transparent to users. When one active DC fails, GSLB automatically redirects all traffic to the remaining active site within seconds, with no need to power on systems or recover data.</p>
+
+                    <div class="rto-rpo">
+                        <div class="rto">
+                            <h4>Recovery Time Objective (RTO)</h4>
+                            <p><strong>Near-zero (seconds to minutes)</strong> - Automatic traffic redirection via GSLB</p>
+                        </div>
+                        <div class="rpo">
+                            <h4>Recovery Point Objective (RPO)</h4>
+                            <p><strong>Near-zero (seconds)</strong> - Synchronous data replication over DCI</p>
+                        </div>
+                    </div>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>Advantages</h4>
+                            <ul>
+                                <li><strong>Near-Zero RTO:</strong> Instantaneous failover with minimal downtime</li>
+                                <li><strong>Near-Zero RPO:</strong> Synchronous replication eliminates data loss</li>
+                                <li><strong>Enhanced Performance:</strong> Load distribution improves user experience</li>
+                                <li><strong>Optimal Resource Utilization:</strong> Both DCs actively contribute to production</li>
+                                <li><strong>Disaster Avoidance:</strong> True disaster prevention rather than recovery</li>
+                                <li><strong>Simplified Testing:</strong> Less disruptive maintenance and testing</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>Disadvantages</h4>
+                            <ul>
+                                <li><strong>Higher Cost:</strong> Significantly more expensive to implement and maintain</li>
+                                <li><strong>Increased Complexity:</strong> Complex design, implementation, and management</li>
+                                <li><strong>Data Consistency Challenges:</strong> Ensuring consistency across distributed sites</li>
+                                <li><strong>Application Compatibility:</strong> Not all applications support active-active deployment</li>
+                                <li><strong>Network Latency Sensitivity:</strong> Performance depends on inter-site connectivity</li>
+                                <li><strong>Operational Overhead:</strong> Requires highly skilled team and robust monitoring</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="recommendation" class="recommendation">
+                    <h2>Recommendation: Design Option 1</h2>
+                    <p>Based on the current infrastructure, objectives, and detailed analysis of both design options, I recommend <strong>Design Option 1: Centralized Production DC with Active-Passive DR</strong> for your Vietnam operations.</p>
+                    
+                    <h3>Justification</h3>
+                    <p>While Design Option 2 offers superior RTO and RPO with near-zero downtime and data loss, its complexity and significantly higher cost make it less suitable for the initial phase of enhancing business continuity for a company with an expanding presence in Vietnam. The recommendation emphasizes enhancing business continuity, minimizing risk, and creating a scalable architecture for future growth, while being open to renting rack space in a commercial colocation data center.</p>
+                    
+                    <h4>Key Reasons:</h4>
+                    <ul>
+                        <li><strong>Cost-Effectiveness:</strong> More manageable initial investment and operational costs</li>
+                        <li><strong>Simplicity:</strong> Less complex to implement and manage, reducing operational overhead</li>
+                        <li><strong>Achieves Core Objectives:</strong> Significantly improves business continuity and resilience</li>
+                        <li><strong>Leverages Existing Infrastructure:</strong> Optimizes use of current assets</li>
+                        <li><strong>Foundation for Growth:</strong> Provides a solid base for future expansion to active-active if needed</li>
+                    </ul>
+                    
+                    <h4>Key Technologies:</h4>
+                    <ul>
+                        <li><strong>SD-WAN:</strong> Enables intelligent traffic routing and enhanced security across all sites</li>
+                        <li><strong>Asynchronous Data Replication:</strong> Balances data currency with operational efficiency</li>
+                        <li><strong>Colocation Data Center:</strong> Provides enterprise-grade infrastructure and scalability</li>
+                    </ul>
+                </section>
+
+                <section id="conclusion">
+                    <h2>Conclusion</h2>
+                    <p>The recommended Centralized Production DC with Active-Passive DR solution provides a balanced and practical approach to enhancing business continuity for your Vietnam operations. This design offers significant improvements in resilience and disaster recovery capabilities while maintaining manageable costs and complexity.</p>
+                    
+                    <p>The solution effectively addresses the primary objectives of enhancing business continuity, minimizing risk, and creating a scalable architecture for future growth. It also provides a solid foundation that can be evolved into a more advanced active-active configuration as the company's operations in Vietnam mature and critical application requirements evolve.</p>
+                    
+                    <p>Implementation of this solution will result in a more resilient, secure, and scalable IT infrastructure that supports current business needs while providing the flexibility to adapt to future requirements.</p>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Data Center and Disaster Recovery Solution. Prepared by Manus AI.</p>
+        </div>
+    </footer>
+
+    <button class="scroll-to-top" onclick="scrollToTop()">↑</button>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Show/hide scroll to top button
+        window.addEventListener('scroll', function() {
+            const scrollButton = document.querySelector('.scroll-to-top');
+            if (window.pageYOffset > 300) {
+                scrollButton.style.display = 'block';
+            } else {
+                scrollButton.style.display = 'none';
+            }
+        });
+
+        // Scroll to top function
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Add active class to navigation based on scroll position
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('nav a[href^="#"]');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (pageYOffset >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.backgroundColor = '';
+                if (link.getAttribute('href') === '#' + current) {
+                    link.style.backgroundColor = '#2c3e50';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
