@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DC/DR Network Architecture Proposal for Vietnam Operations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .diagram {
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre;
+            background-color: #f3f4f6; /* gray-100 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            line-height: 1.2;
+            border: 1px solid #e5e7eb; /* gray-200 */
+        }
+        h2 {
+            border-bottom: 2px solid #e5e7eb; /* gray-200 */
+            padding-bottom: 0.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .option-card {
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.75rem;
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background-color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">DC/DR Network Architecture Proposal</h1>
+            <p class="mt-2 text-lg text-gray-600">For Vietnam Operations</p>
+        </header>
+
+        <!-- Executive Summary -->
+        <div class="mb-12 bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
+            <h2 class="text-2xl font-bold text-gray-900 mt-0 border-none">Executive Summary</h2>
+            <p class="mt-4 text-gray-700">This proposal outlines three strategic options for establishing a primary Data Center (DC) and Disaster Recovery (DR) solution for your operations in Vietnam. The objective is to significantly enhance resilience, security, and scalability. Each option includes a detailed analysis of routing paths for accessing key resources.</p>
+            <ul class="mt-4 list-disc list-inside space-y-2 text-gray-700">
+                <li><strong class="font-semibold">Option 1: Centralized Production DC with Active-Passive DR (at Office):</strong> A robust, cost-effective model using a new colocation DC for production and an existing office as the standby DR site.</li>
+                <li><strong class="font-semibold">Option 2: Geo-Clustered Active-Active DC:</strong> An advanced, high-availability model where two sites actively serve traffic simultaneously, offering minimal downtime at a higher cost and complexity.</li>
+                <li><strong class="font-semibold">Option 3: Dual Colocation Active-Passive DC/DR:</strong> The gold-standard approach, establishing both primary DC and DR sites in separate, purpose-built colocation facilities for maximum resilience.</li>
+            </ul>
+        </div>
+
+        <!-- Option 1 -->
+        <section id="option1" class="option-card">
+            <h2 class="text-2xl font-bold text-blue-700">Option 1: Centralized Production DC with Active-Passive DR (at Office)</h2>
+            
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800">1. High-Level Strategy</h3>
+                <p>This design designates the new colocation data center, <strong>VN-DCH-01</strong>, as the single, primary production site. <strong>VN-OFFICE-01</strong> will be re-purposed as the warm-standby Disaster Recovery (DR) site.</p>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800">2. Network Architecture Diagram</h3>
+                <div class="diagram">
+                                     +--------------------------+
+                                     |   Global Corporate HQ    |
+                                     +--------------------------+
+                                         |                  |
+ (Global P2P Link 1) --------------------'                  '-------------------- (Global P2P Link 2)
+                                         |                  |
+                                         v                  v
++---------------------------------------------------------------------------------------------------+
+|                                      NEW PRIMARY DC (VN-DCH-01)                                     |
+|                                            (Production)                                             |
+| +----------------------+   +----------------------+   +----------------------+   +----------------+ |
+| |  Internet Link #1    |   |  Internet Link #2    |   |  Global P2P Links    |   |      DCI       | |
+| | (Primary ISP)        |   | (Secondary ISP)      |   |  (Terminates Here)   |   | (Dark Fiber/L2)| |
+| +-------+--------------+   +--------+-------------+   +---------+------------+   +-------+--------+ |
+|         |                           |                         |                      |          |
+|         v                           v                         v                      |          |
+|   [SD-WAN/Router] <--> [NGFW Cluster] <--> [Core Switch Cluster] <--> [Server/SAN]     |          |
+|                                ^                                                     |          |
++--------------------------------|-----------------------------------------------------|----------+
+                                 | (SD-WAN over Internet/MPLS)                         | (Data Replication)
+                                 |                                                     |
++--------------------------------|-----------------------------------------------------|----------+
+|  ^                             v                                                     v          |
+|  | [SD-WAN/Router] <--> [NGFW Cluster] <--> [Core Switch Cluster] <--> [Replicated SAN]          |
+|  |                                                                                              |
+|  |                                 DR SITE (VN-OFFICE-01)                                       |
+|  |                                      (Passive)                                               |
+|  +----------------------------------------------------------------------------------------------+
+|    |
+|    |  (User Traffic from VN-OFFICE-01 Access Layer)
+|    |
++----|---------------------------------------------------------------------------------------------+
+     | (SD-WAN over Internet)
+     |
+     +----------------------> [VN-OFFICE-02] -----> [Branch 3, 4, 5]
+                               (Internet link here acts as backup path for all sites)
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800">3. Detailed Routing and Traffic Paths</h3>
+                <ul class="space-y-4">
+                    <li>
+                        <strong class="font-semibold text-gray-700">Accessing Internal Vietnam Apps:</strong>
+                        <p class="ml-4 mt-1 text-gray-600"><strong class="font-medium">Path:</strong> User at Branch -> SD-WAN -> Tunnel over Internet -> SD-WAN Headend at VN-DCH-01 -> NGFW -> Core -> App Server.</p>
+                    </li>
+                    <li>
+                        <strong class="font-semibold text-gray-700">Accessing Global HQ Apps:</strong>
+                        <p class="ml-4 mt-1 text-gray-600"><strong class="font-medium">Path:</strong> User at Branch -> SD-WAN -> Tunnel over Internet -> SD-WAN Headend at VN-DCH-01 -> NGFW -> Core -> Global P2P Link -> Global HQ.</p>
+                    </li>
+                     <li>
+                        <strong class="font-semibold text-gray-700">Accessing Public Internet:</strong>
+                        <p class="ml-4 mt-1 text-gray-600"><strong class="font-medium">Path:</strong> User at Branch -> SD-WAN -> Tunnel over Internet -> SD-WAN Headend at VN-DCH-01 -> NGFW -> Internet Links.</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                 <h3 class="text-xl font-semibold text-gray-800">4. Recovery Objectives</h3>
+                 <div class="flex space-x-4">
+                    <div class="bg-gray-100 p-3 rounded-lg w-1/2"><strong>RTO:</strong> 2-4 hours</div>
+                    <div class="bg-gray-100 p-3 rounded-lg w-1/2"><strong>RPO:</strong> &lt; 15 minutes</div>
+                 </div>
+            </div>
+        </section>
+
+        <!-- Option 2 -->
+        <section id="option2" class="option-card">
+            <h2 class="text-2xl font-bold text-green-700">Option 2: Geo-Clustered Active-Active DC</h2>
+
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800">1. High-Level Strategy</h3>
+                <p>This advanced design treats both the new colocation <strong>VN-DCH-01</strong> and the primary office <strong>VN-OFFICE-01</strong> as two independent, active production data centers, load-balancing traffic between them.</p>
+            </div>
+            
+            <div>
+                 <h3 class="text-xl font-semibold text-gray-800">2. Network Architecture Diagram</h3>
+                <div class="diagram">
+                                     +--------------------------+
+                                     |   Global Corporate HQ    |
+                                     +--------------------------+
+                                         |                  |
+ (Global P2P Link 1) --------------------'                  '-------------------- (Global P2P Link 2)
+        |                                                                           |
+        v                                                                           v
++-----------------------------+                                       +--------------------------------+
+|  ACTIVE DC 1 (VN-DCH-01)    |                                       |   ACTIVE DC 2 (VN-OFFICE-01)   |
+| +---------+      +--------+ |         +-------------------+         | +---------+       +--------+ |
+| |Internet |      |Global  | |         |      GSLB /        |         | |Internet |       |Global  | |
+| |Link #1  |      |P2P #1  | |<-------> | Anycast Routing    | <------->| |Link #3  |       |P2P #2  | |
+| +----+----+      +---+----+ |         +-------------------+         | +----+----+       +---+----+ |
+|      |               |      |                 ^                     |      |                |      |
+|      v               v      |                 | (User Traffic)      |      v                v      |
+| [SD-WAN/Rtr]<->[NGFW]<->[Core]<->[App/SAN] |                               | [SD-WAN/Rtr]<->[NGFW]<->[Core]<->[App/SAN] |
+|                               |                 |                               |                                |
+|          ^                    +-----------------|-------------------+                     ^          |
+|          |                                      |                                         |          |
+|          '--------------------------------------|-----------------------------------------'          |
+|                    (High-Speed DCI for Synchronous Replication)                                        |
+|                                                 |                                                    |
++-------------------------------------------------|----------------------------------------------------+
+                                                  | (SD-WAN over Internet)
+                                                  |
+                                                  v
+                                      [VN-OFFICE-02] -----> [Branch 3, 4, 5]
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800">3. Detailed Routing and Traffic Paths</h3>
+                <ul class="space-y-4">
+                    <li>
+                        <strong class="font-semibold text-gray-700">Accessing Internal Vietnam Apps:</strong>
+                        <p class="ml-4 mt-1 text-gray-600"><strong class="font-medium">Path:</strong> GSLB/SD-WAN directs user to the best DC (VN-DCH-01 or VN-OFFICE-01). Traffic is served locally at that DC.</p>
+                    </li>
+                    <li>
+                        <strong class="font-semibold text-gray-700">Accessing Global HQ Apps:</strong>
+                        <p class="ml-4 mt-1 text-gray-600"><strong class="font-medium">Path:</strong> SD-WAN directs traffic to the closest DC with an active P2P link (P2P #1 at DC1, P2P #2 at DC2).</p>
+                    </li>
+                     <li>
+                        <strong class="font-semibold text-gray-700">Accessing Public Internet:</strong>
+                        <p class="ml-4 mt-1 text-gray-600"><strong class="font-medium">Path:</strong> SD-WAN directs traffic to the nearest DC for local internet breakout.</p>
+                    </li>
+                </ul>
+            </div>
+
+             <div>
+                 <h3 class="text-xl font-semibold text-gray-800">4. Recovery Objectives</h3>
+                 <div class="flex space-x-4">
+                    <div class="bg-green-100 p-3 rounded-lg w-1/2"><strong>RTO:</strong> Near-zero</div>
+                    <div class="bg-green-100 p-3 rounded-lg w-1/2"><strong>RPO:</strong> Zero</div>
+                 </div>
+            </div>
+        </section>
+
+        <!-- Option 3 -->
+        <section id="option3" class="option-card">
+            <h2 class="text-2xl font-bold text-purple-700">Option 3: Dual Colocation Active-Passive DC/DR (Gold Standard)</h2>
+            
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800">1. High-Level Strategy</h3>
+                <p>This design establishes a primary production DC in <strong>VN-DCH-01</strong> and a dedicated DR site in a second, geographically separate colocation facility, <strong>VN-DCH-02</strong>. This offers maximum resilience.</p>
+            </div>
+
+            <div>
+                 <h3 class="text-xl font-semibold text-gray-800">2. Network Architecture Diagram</h3>
+                <div class="diagram">
+                                     +--------------------------+
+                                     |   Global Corporate HQ    |
+                                     +--------------------------+
+                                         |                  |
+ (Global P2P Link 1) --------------------'                  '-------------------- (Global P2P Link 2)
+        |                                                                           |
+        v                                                                           v
++-----------------------------+                                       +--------------------------------+
+| PRIMARY DC (VN-DCH-01)      |       (High-Speed DCI Link)           |      DR SITE (VN-DCH-02)       |
+|          (Active)           |<------------------------------------->|            (Passive)           |
+| +---------+      +--------+ |        (For Data Replication)         | +---------+       +--------+ |
+| |Internet |      |Global  | |                                       | |Internet |       |Global  | |
+| |Link #1  |      |P2P #1  | |                                       | |Link #2  |       |P2P #2  | |
+| +----+----+      +---+----+ |                                       | +----+----+       +---+----+ |
+|      |               |      |                                       |      | (Standby)      | (Standby)|
+|      v               v      |                                       |      v                v      |
+| [SD-WAN/Rtr]<->[NGFW]<->[Core]<->[Prod SAN]                          | [SD-WAN/Rtr]<->[NGFW]<->[Core]<->[Replica SAN] |
+|                               |                                       |                                |
++-------------------------------+---------------------------------------+--------------------------------+
+                                                  |
+                                                  | (SD-WAN over Internet)
+                                                  v
+                 [VN-OFFICE-01/02] -----> [Branch 3, 4, 5]
+                  (Now standard branch/office sites)
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800">3. Detailed Routing and Traffic Paths</h3>
+                <p>Routing paths are identical to Option 1 in normal operation. All traffic is directed to the primary DC (VN-DCH-01). The key difference is the DR site (VN-DCH-02) is a hardened facility with its own standby global and internet links, providing superior failover capabilities.</p>
+            </div>
+            
+            <div>
+                 <h3 class="text-xl font-semibold text-gray-800">4. Recovery Objectives</h3>
+                 <div class="flex space-x-4">
+                    <div class="bg-gray-100 p-3 rounded-lg w-1/2"><strong>RTO:</strong> 1-3 hours</div>
+                    <div class="bg-gray-100 p-3 rounded-lg w-1/2"><strong>RPO:</strong> &lt; 15 minutes</div>
+                 </div>
+            </div>
+        </section>
+        
+        <!-- Recommendation -->
+        <section id="recommendation" class="mt-12 p-6 bg-white rounded-lg shadow-lg border border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-900 mt-0 border-none">Recommendation</h2>
+            <div class="mt-4 space-y-4 text-gray-700">
+                <p>For a global company establishing its first formal DC/DR architecture in Vietnam, I strongly recommend <strong class="text-blue-700">Option 1: Centralized Production DC with Active-Passive DR (at Office)</strong>.</p>
+                <h4 class="font-semibold text-lg">Justification:</h4>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong class="font-semibold">Pragmatic Step-Up:</strong> It provides a massive leap in resilience and maturity over your current state without incurring the cost and complexity of the other two options.</li>
+                    <li><strong class="font-semibold">Cost/Benefit Balance:</strong> It delivers the best "bang for the buck," achieving a robust DR posture that meets the needs of most businesses.</li>
+                </ul>
+                 <p>However, if your company's risk tolerance is extremely low and the budget allows, <strong class="text-purple-700">Option 3: Dual Colocation Active-Passive DC/DR</strong> is the technically superior and most resilient long-term solution. It represents the industry's best practice and should be considered your strategic target architecture.</p>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>
